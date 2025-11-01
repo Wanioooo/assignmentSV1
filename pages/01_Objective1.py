@@ -1,4 +1,3 @@
-# objective1.py
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -11,23 +10,23 @@ def load_data():
 
 df = load_data()
 
-def vis1(df):
-    fig = px.box(df, x='Gender', y='Current_CGPA', title='CGPA vs Gender')
-    st.plotly_chart(fig, width="stretch")
+# --- Page Title ---
+st.title("Objective 1: Core Demographics")
 
-def vis2(df):
-    heatmap_data = df.groupby(['Admission_Year','Age_Group'])['Current_CGPA'].mean().unstack()
-    fig = px.imshow(heatmap_data, text_auto=".2f", title='Average CGPA by Admission Year & Age Group')
-    st.plotly_chart(fig, width="stretch")
+# --- 1. CGPA vs Gender ---
+st.subheader("1️⃣ CGPA Distribution by Gender")
+fig1 = px.box(df, x='Gender', y='Current_CGPA', color='Gender',
+              color_discrete_map={'Male':'blue', 'Female':'red'})
+st.plotly_chart(fig1, width='stretch')
 
-def vis3(df):
-    grouped = df.groupby(['Income_Group','Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
-    fig = px.bar(grouped, x='Income_Group', y='Current_CGPA', color='Meritorious_Scholarship', barmode='group')
-    st.plotly_chart(fig, width="stretch")
+# --- 2. CGPA vs Age Group ---
+st.subheader("2️⃣ CGPA Distribution by Age Group")
+fig2 = px.box(df, x='Age_Group', y='Current_CGPA', color='Age_Group')
+st.plotly_chart(fig2, width='stretch')
 
-def run_objective1():
-    st.title("Objective 1: Core Performance Metrics")
-    df = pd.read_csv("new_dataset_academic_performance (1).csv")
-    vis1(df)
-    vis2(df)
-    vis3(df)
+# --- 3. Average CGPA by Admission Year ---
+st.subheader("3️⃣ Average CGPA by Admission Year")
+avg_cgpa = df.groupby('Admission_Year')['Current_CGPA'].mean().reset_index()
+fig3 = px.bar(avg_cgpa, x='Admission_Year', y='Current_CGPA', 
+              labels={'Current_CGPA':'Average CGPA', 'Admission_Year':'Admission Year'})
+st.plotly_chart(fig3, width='stretch')
