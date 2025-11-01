@@ -6,7 +6,7 @@ st.set_page_config(
 
 page1 = st.Page('main.py', title='Socio-economic and Demographic Influence', icon=":material/thumb_up_off_alt:")
 
-page2 = st.Page('objective1.py', title='Kesan Dalam Pembelajaran', icon=":material/assignment_turned_in:")
+page2 = st.Page('objective2.py', title='Kesan Dalam Pembelajaran', icon=":material/assignment_turned_in:")
 
 pg = st.navigation(
         {
