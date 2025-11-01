@@ -6,7 +6,7 @@ def load_data():
     """
     Load the cleaned sleep dataset from the repo.
     """
-    df = pd.read_csv("cleaned_sleep_data_3.csv")
+    df = pd.read_csv("new_dataset_academic_performance (1).csv")
     return df
 
 
