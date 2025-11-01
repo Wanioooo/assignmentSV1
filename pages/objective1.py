@@ -1,39 +1,25 @@
+# objective1.py
 import streamlit as st
 import pandas as pd
-import numpy as np
 import plotly.express as px
 
-@st.cache_data
-def load_data():
-    """Load the academic performance dataset from GitHub."""
-    URL = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
-    try:
-        df = pd.read_csv(URL)
-    except:
-        st.warning("⚠️ Could not load the actual CSV file. Displaying dummy data for structure review.")
-        df = pd.DataFrame({
-            'Gender': np.random.choice(['Male', 'Female'], 100),
-            'Study Time (hrs)': np.random.randint(1, 15, 100),
-            'Final Grade (0-20)': np.random.randint(5, 20, 100)
-        })
-    return df
+def vis1(df):
+    fig = px.box(df, x='Gender', y='Current_CGPA', title='CGPA vs Gender')
+    st.plotly_chart(fig, width="stretch")
+
+def vis2(df):
+    heatmap_data = df.groupby(['Admission_Year','Age_Group'])['Current_CGPA'].mean().unstack()
+    fig = px.imshow(heatmap_data, text_auto=".2f", title='Average CGPA by Admission Year & Age Group')
+    st.plotly_chart(fig, width="stretch")
+
+def vis3(df):
+    grouped = df.groupby(['Income_Group','Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
+    fig = px.bar(grouped, x='Income_Group', y='Current_CGPA', color='Meritorious_Scholarship', barmode='group')
+    st.plotly_chart(fig, width="stretch")
 
 def run_objective1():
-    st.title("Objective 1: Data Distribution and Exploration")
-    st.write("This page focuses on understanding the raw distribution of key variables in the dataset.")
-
-    df = load_data()
-
-    st.subheader("Raw Data Sample")
-    st.dataframe(df.head())
-
-    st.subheader("Grade Distribution by Gender")
-    fig = px.bar(df.groupby('Gender')['Final Grade (0-20)'].mean().reset_index(),
-                 x='Gender', y='Final Grade (0-20)',
-                 title='Average Grade by Gender',
-                 color='Gender',
-                 color_discrete_map={'Male': 'blue', 'Female': 'red'})
-    st.plotly_chart(fig, use_container_width=True)
-
-if __name__ == "__main__":
-    run_objective1()
+    st.title("Objective 1: Core Performance Metrics")
+    df = pd.read_csv("new_dataset_academic_performance (1).csv")
+    vis1(df)
+    vis2(df)
+    vis3(df)
