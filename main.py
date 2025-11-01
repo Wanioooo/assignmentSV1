@@ -16,4 +16,4 @@ def split_multi_select(df, column_name):
     """
     reasons_df = df[column_name].str.get_dummies(sep=';')
     counts = reasons_df.sum().sort_values(ascending=False)
-    return counts
+    return counts
