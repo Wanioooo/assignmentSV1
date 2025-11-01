@@ -3,7 +3,7 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-# --- 1. Data Loading and Setup ---
+# --- 1. Configuration and Data Loading ---
 st.set_page_config(
     page_title="Academic Performance Dashboard",
     layout="wide",
@@ -11,146 +11,143 @@ st.set_page_config(
 )
 
 st.title("📊 Academic Performance Analysis")
-st.markdown("Exploring the distribution of **Current CGPA** across various demographic and academic factors using Plotly in Streamlit.")
 
 # Define the URL of the CSV file
-url = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
+URL = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
 
-@st.cache_data # Cache the data loading to improve performance
+@st.cache_data
 def load_data(data_url):
+    """Loads, cleans, and prepares the DataFrame."""
     try:
         df = pd.read_csv(data_url)
-        # Ensure Age_Group is a string for plotting/grouping
-        df['Age_Group'] = df['Age_Group'].astype(str)
-        # Assuming 'Admission_Year' is int/string for categorical axes
-        df['Admission_Year'] = df['Admission_Year'].astype(str) 
+        
+        # --- Essential Data Preprocessing for plotting ---
+        # Convert grouping columns to string/categorical to ensure correct plotting behavior
+        if 'Admission_Year' in df.columns:
+            df['Admission_Year'] = df['Admission_Year'].astype(str)
+        if 'Age_Group' in df.columns:
+            df['Age_Group'] = df['Age_Group'].astype(str)
+            
+        # Define and apply the correct order for the Age_Group (Critical for Heatmap)
+        age_order = ['18-20', '21-22', '23-24', '25+']
+        df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=age_order, ordered=True)
+            
         return df
     except Exception as e:
-        st.error(f"Error loading data: {e}")
+        st.error(f"Error loading or preparing data. Please check the URL and column names.")
+        st.exception(e) # Show the detailed error for debugging
         return pd.DataFrame()
 
-df = load_data(url)
+df = load_data(URL)
 
 if df.empty:
     st.stop() # Stop the app if data loading failed
 
-# Optional: Display raw data in an expander
-with st.expander("View Raw Data"):
+# Optional: Display raw data in an expander for confirmation
+with st.expander("🔍 View Data and Column Check"):
     st.dataframe(df)
+    st.write(f"DataFrame Shape: {df.shape}")
+    st.write("Column Names and Data Types:")
+    st.dataframe(df.dtypes)
 
 # --- 2. Visualizations using Plotly Express ---
 st.header("Visualizations")
 
-# Re-order Age_Group for consistent plotting (used in the heatmap and others if needed)
-age_order = ['18-20', '21-22', '23-24', '25+']
-if 'Age_Group' in df.columns:
-    df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=age_order, ordered=True)
-
-# Create two columns for the first two charts
 col1, col2 = st.columns(2)
 
-## Box Plot: Current CGPA vs. Gender (Plotly Express Box Plot)
+# --- Box Plot: Current CGPA vs. Gender ---
 with col1:
     st.subheader("1. CGPA Distribution by Gender (Box Plot)")
-    
-    # Plotly Express Box Plot
-    fig1 = px.box(
-        df,
-        x='Gender',
-        y='Current_CGPA',
-        title='CGPA Distribution by Gender',
-        color='Gender',
-        labels={'Current_CGPA': 'Current CGPA', 'Gender': 'Gender'},
-        color_discrete_sequence=px.colors.qualitative.Pastel
-    )
-    
-    # Set y-axis limits and update layout
-    fig1.update_yaxes(range=[2.0, 4.0])
-    fig1.update_layout(showlegend=False)
-    
-    st.plotly_chart(fig1, use_container_width=True)
-    
+    if all(c in df.columns for c in ['Gender', 'Current_CGPA']):
+        fig1 = px.box(
+            df,
+            x='Gender',
+            y='Current_CGPA',
+            title='CGPA Distribution by Gender',
+            color='Gender',
+            labels={'Current_CGPA': 'Current CGPA'},
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
+        fig1.update_yaxes(range=[2.0, 4.0], autorange=False)
+        fig1.update_layout(showlegend=False)
+        st.plotly_chart(fig1, use_container_width=True)
+    else:
+        st.warning("Skipping Box Plot: 'Gender' or 'Current_CGPA' column not found.")
 
-## Violin Plot: CGPA across University Admission Years (Plotly Express Violin Plot)
+# --- Violin Plot: CGPA across University Admission Years ---
 with col2:
     st.subheader("2. CGPA Distribution across Admission Years (Violin Plot)")
-    
-    # Plotly Express Violin Plot
-    fig2 = px.violin(
-        df, 
-        x='Admission_Year', 
-        y='Current_CGPA', 
-        color='Admission_Year',
-        box=True, # Add a box plot inside the violin
-        points='outliers', # Show outliers
-        title='Distribution of Current CGPA across University Admission Years',
-        labels={'Current_CGPA': 'Current CGPA', 'Admission_Year': 'University Admission Year'},
-        color_discrete_sequence=px.colors.qualitative.Pastel
-    )
-    
-    # Set y-axis limits and update layout
-    fig2.update_yaxes(range=[2.0, 4.0])
-    fig2.update_layout(showlegend=False)
-    
-    st.plotly_chart(fig2, use_container_width=True)
-    
+    if all(c in df.columns for c in ['Admission_Year', 'Current_CGPA']):
+        fig2 = px.violin(
+            df, 
+            x='Admission_Year', 
+            y='Current_CGPA', 
+            color='Admission_Year',
+            box=True, 
+            points='all', # Showing all points is often more informative
+            title='Distribution of Current CGPA across University Admission Years',
+            labels={'Current_CGPA': 'Current CGPA'},
+            color_discrete_sequence=px.colors.qualitative.Pastel
+        )
+        fig2.update_yaxes(range=[2.0, 4.0], autorange=False)
+        fig2.update_layout(showlegend=False)
+        st.plotly_chart(fig2, use_container_width=True)
+    else:
+        st.warning("Skipping Violin Plot: 'Admission_Year' or 'Current_CGPA' column not found.")
 
 st.markdown("---")
 
-## Heatmap: Average CGPA by Admission Year and Age Group (Plotly Express Heatmap)
+# --- Heatmap: Average CGPA by Admission Year and Age Group ---
 st.subheader("3. Average CGPA by Admission Year and Age Group (Heatmap)")
+if all(c in df.columns for c in ['Admission_Year', 'Age_Group', 'Current_CGPA']):
+    # Prepare data for heatmap
+    heatmap_data_grouped = df.groupby(['Admission_Year', 'Age_Group'])['Current_CGPA'].mean().unstack()
 
-# Calculate the grouped data for the heatmap
-heatmap_data_grouped = df.groupby(['Admission_Year', 'Age_Group'])['Current_CGPA'].mean().unstack()
+    # Reindex columns to ensure correct order
+    age_order = ['18-20', '21-22', '23-24', '25+']
+    heatmap_data_grouped = heatmap_data_grouped.reindex(columns=age_order)
+    
+    # Plotly Express Heatmap
+    fig3 = px.imshow(
+        heatmap_data_grouped, # Pass the DataFrame directly to px.imshow
+        x=heatmap_data_grouped.columns.tolist(),
+        y=heatmap_data_grouped.index.tolist(),
+        color_continuous_scale="YlGnBu",
+        text_auto=".2f",
+        aspect="auto",
+        title='Average CGPA by Admission Year and Age Group'
+    )
 
-# Reindex columns to ensure correct order
-heatmap_data_grouped = heatmap_data_grouped.reindex(columns=age_order)
+    fig3.update_layout(
+        xaxis_title='Age Group (Years)',
+        yaxis_title='University Admission Year',
+        xaxis={'side': 'bottom'}
+    )
+    fig3.update_coloraxes(colorbar_title='Average Current CGPA')
 
-# Plotly Express Heatmap (px.imshow is often easier for this structure)
-fig3 = px.imshow(
-    heatmap_data_grouped.values,
-    x=heatmap_data_grouped.columns,
-    y=heatmap_data_grouped.index,
-    color_continuous_scale="YlGnBu",
-    text_auto=".2f", # Display text on tiles, formatted to 2 decimal places
-    aspect="auto"
-)
-
-# Customize layout for the heatmap
-fig3.update_layout(
-    title='Average CGPA by Admission Year and Age Group',
-    xaxis_title='Age Group (Years)',
-    yaxis_title='University Admission Year',
-    xaxis={'side': 'bottom'} # Move x-axis labels to the bottom
-)
-
-# Customize colorbar title
-fig3.update_coloraxes(colorbar_title='Average Current CGPA')
-
-st.plotly_chart(fig3, use_container_width=True)
-
+    st.plotly_chart(fig3, use_container_width=True)
+else:
+    st.warning("Skipping Heatmap: Required columns ('Admission_Year', 'Age_Group', 'Current_CGPA') not found.")
 
 st.markdown("---")
 
-## Grouped Bar Plot: Average CGPA by Income Group and Scholarship (Plotly Express Bar Chart)
+# --- Grouped Bar Plot: Average CGPA by Income Group and Scholarship ---
 st.subheader("4. Average CGPA by Income Group and Meritorious Scholarship")
+if all(c in df.columns for c in ['Income_Group', 'Meritorious_Scholarship', 'Current_CGPA']):
+    # Calculate the average CGPA
+    grouped_data_bar = df.groupby(['Income_Group', 'Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
 
-# Calculate the average CGPA by Income Group and Meritorious Scholarship Status
-grouped_data_bar = df.groupby(['Income_Group', 'Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
-
-# Plotly Express Grouped Bar Chart
-fig4 = px.bar(
-    grouped_data_bar, 
-    x='Income_Group', 
-    y='Current_CGPA', 
-    color='Meritorious_Scholarship', 
-    barmode='group', # Important for grouped bar chart
-    title='Average CGPA by Family Income Group and Meritorious Scholarship Status',
-    labels={'Current_CGPA': 'Average Current CGPA', 'Income_Group': 'Family Income Group', 'Meritorious_Scholarship': 'Meritorious Scholarship'},
-    color_discrete_sequence=px.colors.qualitative.Vivid # Using a different palette
-)
-
-# Customize x-axis order if preferred (assuming Income_Group has a natural order)
-# fig4.update_xaxes(categoryorder='array', categoryarray=['Low', 'Medium', 'High']) 
-
-st.plotly_chart(fig4, use_container_width=True)
+    # Plotly Express Grouped Bar Chart
+    fig4 = px.bar(
+        grouped_data_bar, 
+        x='Income_Group', 
+        y='Current_CGPA', 
+        color='Meritorious_Scholarship', 
+        barmode='group', # Creates the grouped bars
+        title='Average CGPA by Family Income Group and Meritorious Scholarship Status',
+        labels={'Current_CGPA': 'Average Current CGPA', 'Income_Group': 'Family Income Group', 'Meritorious_Scholarship': 'Meritorious Scholarship'},
+        color_discrete_sequence=px.colors.qualitative.Vivid
+    )
+    st.plotly_chart(fig4, use_container_width=True)
+else:
+    st.warning("Skipping Bar Plot: Required columns ('Income_Group', 'Meritorious_Scholarship', 'Current_CGPA') not found.")
