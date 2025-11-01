@@ -5,9 +5,9 @@ st.set_page_config(
 )
 
 # Define the pages using the functions created above
-page1 = st.Page(objective1_page, title='Objective 1: Demographics', icon=":material/bar_chart:")
-page2 = st.Page(objective2_page, title='Objective 2: Learning Factors', icon=":material/assignment_turned_in:")
-home = st.Page(home_page, title='Homepage', default=True, icon=":material/home:")
+page1 = st.Page(objective1.py, title='Objective 1: Demographics', icon=":material/bar_chart:")
+page2 = st.Page(objective2.py, title='Objective 2: Learning Factors', icon=":material/assignment_turned_in:")
+home = st.Page(main.py, title='Homepage', default=True, icon=":material/home:")
 
 # Create the navigation menu
 pg = st.navigation(
