@@ -3,6 +3,11 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
+# pages/objective2.py
+import streamlit as st
+st.title("📚 Objective 2: Learning Factors")
+st.write("This is the analysis page for learning factors.")
+
 # --- 1. Configuration and Data Loading ---
 
 # You must replace this with your actual data loading method.
