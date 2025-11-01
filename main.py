@@ -1,31 +1,19 @@
+import pandas as pd
 import streamlit as st
 
-# --- Configuration ---
-st.set_page_config(
-    page_title="Academic Performance Dashboard",
-    page_icon="🎓",
-    layout="wide"
-)
+@st.cache_data
+def load_data():
+    """
+    Load the cleaned sleep dataset from the repo.
+    """
+    df = pd.read_csv("cleaned_sleep_data_3.csv")
+    return df
 
-def main_page():
-    """Defines the content for the application's main/home page."""
-    st.title("🎓 Academic Performance Analysis Dashboard")
-    st.markdown("""
-        Welcome to the Academic Performance Dashboard. This application allows you
-        to explore different objectives related to student data.
 
-        **To get started, select one of the analysis objectives from the sidebar:**
-
-        * **Objective 1:** Explore Data Distribution
-        * **Objective 2:** Predict Student Outcomes
-        * **Objective 3:** Compare Group Performance
-
-        This data exploration uses the `new_dataset_academic_performance.csv` file.
-    """)
-
-    # Optional: Display a small section on the main page
-    st.header("Quick Overview")
-    st.info("The individual analysis pages are located in the `pages/` directory.")
-
-if __name__ == "__main__":
-    main_page()
+def split_multi_select(df, column_name):
+    """
+    Splits a multi-select column and counts options.
+    """
+    reasons_df = df[column_name].str.get_dummies(sep=';')
+    counts = reasons_df.sum().sort_values(ascending=False)
+    return counts
