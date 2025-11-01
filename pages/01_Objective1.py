@@ -3,6 +3,14 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
+# Load the dataset
+@st.cache_data
+def load_data():
+    df = pd.read_csv('new_dataset_academic_performance (1).csv')
+    return df
+
+df = load_data()
+
 def vis1(df):
     fig = px.box(df, x='Gender', y='Current_CGPA', title='CGPA vs Gender')
     st.plotly_chart(fig, width="stretch")
