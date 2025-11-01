@@ -32,12 +32,6 @@ def load_data():
         
     return df
 
-st.set_page_config(
-    page_title="Academic Factor Analysis",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
-
 st.title("📊 Interactive Academic Performance Dashboard")
 st.markdown("---")
 
