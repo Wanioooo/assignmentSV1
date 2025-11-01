@@ -8,8 +8,6 @@ page1 = st.Page('main.py', title='Kepuasan Pelajar Dalam Pembelajaran', icon=":m
 
 page2 = st.Page('objective1.py', title='Kesan Dalam Pembelajaran', icon=":material/assignment_turned_in:")
 
-home = st.Page('Homepage.py', title='Homepage', default=True, icon=":material/home:")
-
 pg = st.navigation(
         {
             "Menu": [home, page1, page2]
