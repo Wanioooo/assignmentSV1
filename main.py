@@ -1,42 +1,31 @@
 import streamlit as st
 
-# This function controls the browser tab title and the default layout
+# --- Configuration ---
 st.set_page_config(
     page_title="Academic Performance Dashboard",
     page_icon="🎓",
     layout="wide"
 )
 
-# --- Content placed in the Sidebar (Navigation Bar) ---
-# The links to the pages will appear AUTOMATICALLY above this custom content.
-st.sidebar.title("📚 Project Navigation")
-st.sidebar.markdown(
-    """
-    Select one of the objectives above to view the analysis 
-    and interactive data tools for that objective.
-    """
-)
-st.sidebar.write("---")
-st.sidebar.subheader("App Info")
-st.sidebar.markdown("App Version 1.0. Developed for Academic Analysis.")
+def main_page():
+    """Defines the content for the application's main/home page."""
+    st.title("🎓 Academic Performance Analysis Dashboard")
+    st.markdown("""
+        Welcome to the Academic Performance Dashboard. This application allows you
+        to explore different objectives related to student data.
 
+        **To get started, select one of the analysis objectives from the sidebar:**
 
-# --- Content for the Home Page ---
-st.title("🎓 Welcome to the Academic Performance Dashboard")
-st.header("Project Overview")
+        * **Objective 1:** Explore Data Distribution
+        * **Objective 2:** Predict Student Outcomes
+        * **Objective 3:** Compare Group Performance
 
-st.markdown("""
-Welcome! This application is designed to help you analyze and visualize 
-the key factors affecting academic performance using the provided dataset.
+        This data exploration uses the `new_dataset_academic_performance.csv` file.
+    """)
 
-Your navigation is automatically handled by Streamlit. All you need to do 
-is put your Python files in the `pages/` folder, and they appear as links 
-in the sidebar (on the left) right away!
+    # Optional: Display a small section on the main page
+    st.header("Quick Overview")
+    st.info("The individual analysis pages are located in the `pages/` directory.")
 
-### How to use the app:
-1.  **Select** a link in the **"Project Navigation"** sidebar.
-2.  Each link corresponds to a specific objective (`objective1.py`, etc.).
-3.  Each page contains the necessary code and visuals for that analysis step.
-
-👉 **Start by selecting '1. Data Exploration' to begin the analysis.**
-""")
+if __name__ == "__main__":
+    main_page()
