@@ -3,6 +3,11 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
+# pages/objective1.py
+import streamlit as st
+st.title("📊 Objective 1: Demographics")
+st.write("This is the analysis page for demographics.")
+
 # --- 1. Configuration and Data Loading ---
 
 st.title("📊 Academic Performance Analysis")
