@@ -4,11 +4,6 @@ import plotly.express as px
 import numpy as np
 
 # --- 1. Configuration and Data Loading ---
-st.set_page_config(
-    page_title="Academic Performance Dashboard",
-    layout="wide",
-    initial_sidebar_state="expanded"
-)
 
 st.title("📊 Academic Performance Analysis")
 
