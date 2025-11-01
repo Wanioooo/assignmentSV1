@@ -1,16 +1,16 @@
 import streamlit as st
 
 st.set_page_config(
-    page_title="Online Learning Survey"
+    page_title="Academic Performance Analysis"
 )
 
-page1 = st.Page('main.py', title='Kepuasan Pelajar Dalam Pembelajaran', icon=":material/thumb_up_off_alt:")
+page1 = st.Page('main.py', title='Socio-economic and Demographic Influence', icon=":material/thumb_up_off_alt:")
 
 page2 = st.Page('objective1.py', title='Kesan Dalam Pembelajaran', icon=":material/assignment_turned_in:")
 
 pg = st.navigation(
         {
-            "Menu": [home, page1, page2]
+            "Menu": [page1, page2]
         }
     )
 
