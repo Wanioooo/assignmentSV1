@@ -3,35 +3,6 @@ import pandas as pd
 import plotly.express as px
 import numpy as np
 
-import streamlit as st
-
-# Note: st.set_page_config is only needed in the main file (main.py)
-
-# You can set a custom title for the sidebar here (optional)
-# Streamlit will automatically use the filename (Objective 1)
-st.title("🎯 Objective 1: Data Exploration and Cleaning")
-st.header("Initial Data Assessment")
-
-st.markdown("""
-This page focuses on loading the data, checking for missing values, 
-understanding data types, and performing necessary cleaning steps.
-
----
-
-### Step 1: Data Loading
-*Code block to load `new_dataset_academic_performance (1).csv`.*
-
-### Step 2: Distribution Analysis
-*Visualizations like histograms and box plots for key numeric columns (e.g., scores).*
-
-### Step 3: Cleaning and Transformation
-*Logic for handling outliers, encoding categorical variables, etc.*
-""")
-
-# Example of a chart placeholder
-st.subheader("Distribution of Math Scores")
-st.bar_chart({'Math Score': [60, 70, 80, 90, 100], 'Count': [5, 15, 25, 10, 5]})
-
 
 # --- 1. Configuration and Data Loading ---
 
