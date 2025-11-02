@@ -170,7 +170,7 @@ st.header("Analysis and Findings", divider="red")
 st.subheader("Summary Box: Academic Challenges and Student Engagement")
 with st.container(border=True):
     st.markdown("""
-    **SummaryBox:**
+    **Summary:**
     This objective evaluates the role of **support mechanisms** (teacher consultancy), **language proficiency**, and **long-term engagement** (skill development) on academic outcomes. The metrics reveal a positive **CGPA boost** (approximately +0.13) for students attending **teacher consultancy**, suggesting it is an effective intervention tool. The box plot confirms that consultation significantly reduces the probability of a student falling into probation. Critically, the heatmap demonstrates a strong inverse relationship between **English Proficiency** and the **Probation Rate**, with students at the Basic level being the most vulnerable. Furthermore, students maintain a consistent, stable commitment to **Daily Skill Development** across all semesters, indicating a healthy level of self-directed learning effort over time.
     """)
 
