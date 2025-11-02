@@ -208,7 +208,7 @@ st.header("Analysis and Findings", divider="red")
 st.subheader("Summary Box: Study Habits and Resource Utilization")
 with st.container(border=True):
     st.markdown("""
-    **Summary Box:**
+    **Summary:**
     This objective analyzes how **study habits** (study time, social media time, attendance) and **resources** (PC ownership) impact **Current CGPA**. There is a clear **positive relationship** between **Daily Study Hours** and average CGPA, peaking in the 3-4 hour range. Conversely, increased **Daily Social Media Hours** correlate with lower median CGPA and wider performance variation. The scatter plot confirms a **strong positive correlation** (approx. 0.70) between **Class Attendance Percentage** and CGPA, highlighting its critical role. Furthermore, owning a **Personal Computer (PC)** is associated with a reliably higher average CGPA, irrespective of the student's preferred learning mode (online, physical, or blended), suggesting that accessibility to personal equipment is a significant resource advantage.
     """)
 
