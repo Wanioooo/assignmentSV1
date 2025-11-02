@@ -16,6 +16,45 @@ df = load_data()
 st.header("Objective 1: Socio-economic and Demographic Influence", divider="gray")
 st.markdown("🎓 Analyze the influence of socio-economic and demographic factors on student academic performance (Current CGPA). ")
 
+# --- SUMMARY METRIC FUNCTION (NEW ADDITION) ---
+
+def calculate_summary_metrics(df):
+    """
+    Calculates and structures key summary metrics (Mean CGPA, Std Dev, Count)
+    for Gender, Scholarship Status, and Age Group.
+    """
+    
+    # 1. Mean CGPA by Gender
+    gender_summary = df.groupby('Gender')['Current_CGPA'].agg(['mean', 'std', 'count']).rename(
+        columns={'mean': 'Mean CGPA', 'std': 'Std Dev', 'count': 'Student Count'}
+    ).reset_index()
+    gender_summary['Group'] = 'Gender'
+    gender_summary = gender_summary.rename(columns={'Gender': 'Category'})
+
+    # 2. Mean CGPA by Meritorious Scholarship Status
+    scholarship_summary = df.groupby('Meritorious_Scholarship')['Current_CGPA'].agg(['mean', 'std', 'count']).rename(
+        columns={'mean': 'Mean CGPA', 'std': 'Std Dev', 'count': 'Student Count'}
+    ).reset_index()
+    scholarship_summary['Group'] = 'Scholarship Status'
+    scholarship_summary = scholarship_summary.rename(columns={'Meritorious_Scholarship': 'Category'})
+    
+    # 3. Mean CGPA by Age Group
+    age_summary = df.groupby('Age_Group')['Current_CGPA'].agg(['mean', 'std', 'count']).rename(
+        columns={'mean': 'Mean CGPA', 'std': 'Std Dev', 'count': 'Student Count'}
+    ).reset_index()
+    age_summary['Group'] = 'Age Group'
+    age_summary = age_summary.rename(columns={'Age_Group': 'Category'})
+    
+    # Combine all summaries
+    summary_df = pd.concat([gender_summary, scholarship_summary, age_summary], ignore_index=True)
+    
+    # Format to two decimal places
+    summary_df['Mean CGPA'] = summary_df['Mean CGPA'].round(2)
+    summary_df['Std Dev'] = summary_df['Std Dev'].round(2)
+
+    return summary_df[['Group', 'Category', 'Mean CGPA', 'Std Dev', 'Student Count']]
+
+
 # --- Visualization Functions from main.py ---
 
 st.subheader("Visualization 1: Box Plot of CGPA Distribution by Gender")
@@ -73,3 +112,12 @@ st.subheader("Visualization 2: Heatmap of Average CGPA by Admission Year and Age
 st.plotly_chart(plot_cgpa_heatmap(df), width='stretch')
 st.subheader("Visualization 3: Group Bar Plot Average CGPA by Family Income Group and Meritorious Scholarship Status.")
 st.plotly_chart(plot_cgpa_by_income_scholarship(df), width='stretch')
+
+
+# --- Display Summary Metrics Table (NEW SECTION) ---
+st.header("Key Performance Metrics", divider="green")
+st.markdown("📈 **Formal Summary of Mean CGPA by Key Demographic and Socio-economic Factors.**")
+
+# Calculate and display the summary table
+summary_metrics_df = calculate_summary_metrics(df)
+st.dataframe(summary_metrics_df, use_container_width=True)
