@@ -36,8 +36,8 @@ def load_data():
 
 df = load_data()
 
-st.title("Objective 2: Study Habits and Environmental Factors")
-st.markdown("🔍 Examining the relationship between student study behaviors (study time, social media use, attendance) and academic performance (Current CGPA).")
+st.title("Objective 2: Study Habits and Resource Utilization")
+st.markdown("🔍 Investigate the relationship between study habits and resource utilization with student academic performance. 
 
 # Check if the DataFrame is empty before proceeding with calculations
 if df.empty or 'Current_CGPA' not in df.columns:
