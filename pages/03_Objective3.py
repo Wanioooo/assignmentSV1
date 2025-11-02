@@ -144,29 +144,6 @@ Students with consistent attendance generally maintain higher academic performan
 """)
 
 # --- Visualization 3 ---
-st.subheader("Visualization 3: Average CGPA by Daily Study Hours")
-study_data = df.groupby('Daily_Study_Hours')['Current_CGPA'].mean().reset_index()
-fig3 = px.bar(
-    study_data,
-    x='Daily_Study_Hours',
-    y='Current_CGPA',
-    color='Daily_Study_Hours',
-    title='Visualization 3: Average CGPA by Daily Study Hours',
-    height=500
-)
-fig3.update_layout(
-    xaxis_title='Daily Study Hours (Hours)',
-    yaxis_title='Average Current CGPA',
-    showlegend=False
-)
-st.plotly_chart(fig3, use_container_width=True)
-st.markdown("""
-**Interpretation:**  
-Average CGPA increases steadily with longer study hours, peaking in the 3–4 hour range.  
-This reflects the principle that *time invested in focused study directly enhances academic achievement*.
-""")
-
-# --- Visualization 4 ---
 st.subheader("Visualization 4: Average CGPA: PC Ownership vs. Learning Mode")
 pc_mode_data = df.groupby(['Learning_Mode', 'Has_PC'])['Current_CGPA'].mean().reset_index()
 fig4 = px.bar(
@@ -189,13 +166,4 @@ st.markdown("""
 **Interpretation:**  
 Students who own a **Personal Computer (PC)** consistently show higher CGPA across all learning modes (online, physical, blended).  
 This finding emphasizes how *access to technology* significantly supports academic performance and efficiency.
-""")
-
-# --- Final Interpretation Summary ---
-st.header("🧩 Overall Interpretation and Discussion", divider="red")
-st.markdown("""
-* **Study Time vs. CGPA:** The data indicates a *monotonic increase* in CGPA with longer study durations, affirming that disciplined study habits enhance performance.  
-* **Attendance:** The *strong correlation* (≈ 0.70) between attendance and CGPA confirms that classroom engagement is a key predictor of academic success.  
-* **Social Media Usage:** Heavy usage introduces distraction, lowering academic outcomes and increasing inconsistency.  
-* **PC Ownership:** Ownership of personal digital tools is an *academic advantage*, ensuring students can effectively complete tasks and access online materials.
 """)
