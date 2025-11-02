@@ -13,12 +13,12 @@ def load_data():
 
 df = load_data()
 
-st.title("Objective 1: Socio-economic and Demographic Influence", divider="gray")
+st.header("Objective 1: Socio-economic and Demographic Influence", divider="gray")
 st.markdown("🎓 Analyze the influence of socio-economic and demographic factors on student academic performance (Current CGPA). ")
 
 # --- Visualization Functions from main.py ---
 
-st.header("Visualization 1: Box Plot of CGPA Distribution by Gender")
+st.markdown("Visualization 1: Box Plot of CGPA Distribution by Gender")
 
 def plot_cgpa_vs_gender(data):
     fig = px.box(
