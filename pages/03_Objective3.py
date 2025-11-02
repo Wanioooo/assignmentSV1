@@ -2,14 +2,8 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 
-# ======================
-# Page Configuration
-# ======================
-st.set_page_config(page_title="Objective 2 - Learning Factors", layout="wide")
+st.set_page_config(page_title="Objective 3 - Academic Insights", layout="wide")
 
-# ======================
-# Load Dataset
-# ======================
 @st.cache_data
 def load_data():
     df = pd.read_csv("new_dataset_academic_performance (1).csv")
@@ -17,81 +11,62 @@ def load_data():
 
 df = load_data()
 
-# ======================
-# Summary Box
-# ======================
-with st.container():
-    st.subheader("📊 Objective 2: Learning Factors")
-    st.info("""
-    This section explores how different learning-related factors affect students' academic performance.
-    The analysis focuses on study hours, sleep duration, and extracurricular involvement in relation
-    to performance scores.
-    """)
+# Show columns to confirm correct names
+st.write("📋 Columns in dataset:", df.columns.tolist())
 
-# ======================
-# Visualization 1 - Study Hours vs Performance
-# ======================
-st.write("### 1️⃣ Relationship between Study Hours and Academic Performance")
-
-fig1 = px.scatter(
-    df,
-    x="StudyHours",
-    y="PerformanceScore",
-    color="Gender",
-    title="Study Hours vs Performance Score by Gender",
-    labels={"StudyHours": "Study Hours per Day", "PerformanceScore": "Performance Score"}
-)
-st.plotly_chart(fig1, use_container_width=True)
-
-st.caption("""
-**Interpretation:** Students who dedicate more study hours per day tend to achieve higher performance scores.
-This trend appears across genders, indicating that consistent study habits positively impact academic results.
+# --- Summary box ---
+st.subheader("🎯 Objective 3: Academic Insights")
+st.info("""
+This section investigates academic behavior patterns by linking study hours, sleep quality,
+and extracurricular activities to academic performance.
 """)
 
-# ======================
-# Visualization 2 - Sleep Duration vs Performance
-# ======================
-st.write("### 2️⃣ Relationship between Sleep Duration and Academic Performance")
+# --- Visualization 1 ---
+try:
+    fig1 = px.scatter(
+        df,
+        x="StudyHours",  # 🔁 change to match your actual column name
+        y="PerformanceScore",  # 🔁 change to match your actual column name
+        color="Gender",  # 🔁 change if necessary
+        title="Study Hours vs Performance Score by Gender",
+        labels={"StudyHours": "Study Hours per Day", "PerformanceScore": "Performance Score"}
+    )
+    st.plotly_chart(fig1, use_container_width=True)
+    st.caption("**Interpretation:** Students who spend more hours studying tend to achieve higher scores overall.")
+except ValueError as e:
+    st.error(f"⚠️ Check your column names: {e}")
 
-fig2 = px.box(
-    df,
-    x="SleepDuration",
-    y="PerformanceScore",
-    color="Gender",
-    title="Sleep Duration vs Performance by Gender",
-    labels={"SleepDuration": "Sleep Duration (hours)", "PerformanceScore": "Performance Score"}
-)
-st.plotly_chart(fig2, use_container_width=True)
+# --- Visualization 2 ---
+try:
+    fig2 = px.box(
+        df,
+        x="SleepDuration",  # 🔁 change if needed
+        y="PerformanceScore",
+        color="Gender",
+        title="Sleep Duration vs Academic Performance",
+        labels={"SleepDuration": "Sleep Duration (hours)", "PerformanceScore": "Performance Score"}
+    )
+    st.plotly_chart(fig2, use_container_width=True)
+    st.caption("**Interpretation:** Students with 6–8 hours of sleep usually perform better academically.")
+except ValueError as e:
+    st.error(f"⚠️ Check your column names: {e}")
 
-st.caption("""
-**Interpretation:** Students who sleep between 6–8 hours generally perform better compared to those who sleep
-less than 5 hours, emphasizing the importance of adequate rest in maintaining academic performance.
-""")
+# --- Visualization 3 ---
+try:
+    fig3 = px.violin(
+        df,
+        x="Extracurricular",  # 🔁 check spelling
+        y="PerformanceScore",
+        color="Gender",
+        box=True,
+        points="all",
+        title="Extracurricular Involvement vs Academic Performance",
+        labels={"Extracurricular": "Extracurricular Participation", "PerformanceScore": "Performance Score"}
+    )
+    st.plotly_chart(fig3, use_container_width=True)
+    st.caption("**Interpretation:** Balanced involvement in extracurriculars correlates with higher performance.")
+except ValueError as e:
+    st.error(f"⚠️ Check your column names: {e}")
 
-# ======================
-# Visualization 3 - Extracurricular Involvement
-# ======================
-st.write("### 3️⃣ Extracurricular Involvement vs Academic Performance")
-
-fig3 = px.violin(
-    df,
-    x="Extracurricular",
-    y="PerformanceScore",
-    color="Gender",
-    box=True,
-    points="all",
-    title="Extracurricular Involvement and Performance Distribution",
-    labels={"Extracurricular": "Extracurricular Participation", "PerformanceScore": "Performance Score"}
-)
-st.plotly_chart(fig3, use_container_width=True)
-
-st.caption("""
-**Interpretation:** Moderate involvement in extracurricular activities is associated with balanced academic
-performance. Excessive participation may reduce study time, while no participation can limit soft skill development.
-""")
-
-# ======================
-# Footer
-# ======================
 st.markdown("---")
-st.success("✅ Analysis completed successfully!")
+st.success("✅ Objective 3 visualizations loaded successfully!")
