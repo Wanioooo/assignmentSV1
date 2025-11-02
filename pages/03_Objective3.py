@@ -37,8 +37,8 @@ def load_data():
 
 df = load_data()
 
-st.title("Objective 3: Support Systems and Skill Development")
-st.markdown("🤝 Analyzing the role of university support systems (consultancy, probation) and student skill development in academic success.")
+st.title("Objective 3: Academic Challenges and Student Engagement")
+st.markdown("🤝 3.	Explore the interplay of academic challenges and student engagement with overall performance.")
 
 # Check if the DataFrame is empty before proceeding with calculations
 if df.empty or 'Current_CGPA' not in df.columns:
@@ -161,11 +161,11 @@ def plot_english_probation_count_heatmap(data):
     return fig
 
 # --- Display Visualizations ---
-st.subheader("Visualization 1: CGPA Distribution: Probation Status and Teacher Consultancy")
+st.subheader("Visualization 1: Grouped Box Plot of CGPA: Probation Status and Teacher Consultancy")
 st.plotly_chart(plot_probation_consultancy(df), use_container_width=True)
 
-st.subheader("Visualization 2: Average Daily Skill Development Hours by Current Semester")
+st.subheader("Visualization 2: Line Plot of Average Daily Skill Development Hours by Current Semester")
 st.plotly_chart(plot_skill_dev_vs_semester(df), use_container_width=True)
 
-st.subheader("Visualization 3: Student Count by English Proficiency and Probation Status")
+st.subheader("Visualization 3: Heatmap of Student Count by English Proficiency and Probation Status")
 st.plotly_chart(plot_english_probation_count_heatmap(df), use_container_width=True)
