@@ -163,13 +163,3 @@ else:
     st.caption("**Interpretation:** Students with basic English proficiency are more likely to fall on probation, suggesting language comprehension barriers significantly affect academic success.")
 
     st.divider()
-
-    # --- Final Discussion ---
-    st.header("Interpretation & Discussion", divider="red")
-    st.markdown("""
-    * **Consultancy as a Mitigating Factor:** The grouped box plot shows that students who attend consultancy maintain a narrower, higher CGPA range, and are less represented in the probation group — proving the **value of proactive student engagement** and teacher support.
-    * **Language Proficiency Barrier:** The heatmap reveals that **English proficiency** is a major determinant of academic success. Students with **Basic** proficiency face the highest probation rates, suggesting comprehension and communication challenges.
-    * **Skill Development Trend:** The line plot demonstrates stable engagement in **skill development** across semesters — a promising sign of students' sustained motivation and self-directed learning.
-    """)
-
-    st.success("✅ Analysis complete — all visualizations and interpretations successfully rendered.")
