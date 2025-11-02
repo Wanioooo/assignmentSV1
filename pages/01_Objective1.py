@@ -14,7 +14,7 @@ def load_data():
 df = load_data()
 
 st.header("Objective 1: Socio-economic and Demographic Influence", divider="gray")
-st.title("🎓 •	Analyze the influence of socio-economic and demographic factors on student academic performance (Current CGPA). ")
+st.markdown("🎓 Analyze the influence of socio-economic and demographic factors on student academic performance (Current CGPA). ")
 
 # --- Visualization Functions from main.py ---
 
