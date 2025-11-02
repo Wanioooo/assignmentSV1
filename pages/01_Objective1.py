@@ -7,24 +7,11 @@ import plotly.express as px
 # Objective 1: Socio-economic and Demographic Influence
 # =========================================================
 
-# --- Page Setup ---
 st.set_page_config(
     page_title="Academic Performance Dashboard",
     layout="wide",
     initial_sidebar_state="expanded"
 )
-
-# --- Sidebar Info ---
-st.sidebar.title("📊 Dashboard Info")
-st.sidebar.markdown("""
-This dashboard analyzes how **socio-economic** and **demographic factors**  
-influence **student academic performance (CGPA)**.
-
-**Visualizations:**
-1. CGPA Distribution by Gender  
-2. Average CGPA by Admission Year & Age Group  
-3. CGPA by Family Income & Scholarship Status
-""")
 
 # =========================================================
 # 🧩 Load Dataset
@@ -42,35 +29,51 @@ def load_data():
         st.error(f"🚨 Failed to load dataset: {e}")
         return pd.DataFrame()
 
-# Load data
 df = load_data()
 
-# --- Validate Data ---
+# Validate Data
 if df.empty or 'Current_CGPA' not in df.columns:
     st.warning("⚠️ Dataset could not be loaded or is missing required columns.")
     st.stop()
 
 # =========================================================
-# 📈 Overview & Key Metrics
+# 🎯 Objective Description
 # =========================================================
-st.header("🎯 Objective 1: Socio-economic and Demographic Influence", divider="gray")
+st.header("Objective 1: Socio-economic and Demographic Influence", divider="gray")
 st.markdown("""
-This section explores how **gender**, **age**, **income**, and **scholarship status**
-affect students’ **Current CGPA** performance.
+🎓 **Goal:** Analyze the influence of socio-economic and demographic factors on student academic performance (**Current CGPA**).
 """)
 
-# --- Key CGPA Metrics ---
-st.subheader("📊 Summary Metrics for Academic Performance")
+# =========================================================
+# 📦 Summary Box (Moved to Top)
+# =========================================================
+st.subheader("📘 Summary Box: Socio-economic and Demographic Influence")
+
+with st.container(border=True):
+    st.markdown("""
+    **Summary:**  
+    This analysis explores the impact of **gender**, **age/admission year**, and **socio-economic status** on **Current CGPA**.  
+    The visualizations show that while average CGPA is similar between genders (as reflected in the metrics), the **Meritorious Scholarship** status is a powerful positive differentiator across all income groups, consistently linking to higher average CGPA.  
+    The heatmap reveals a potential academic challenge among older students (25+) across most admission years, as they tend to have slightly lower average CGPAs compared to the younger groups.  
+    Overall, financial aid tied to merit appears to be a stronger predictor of academic performance than gender or income group alone.
+    """)
+
+st.divider()
+
+# =========================================================
+# 📊 Summary Metrics
+# =========================================================
+st.subheader("Key Summary Metrics for Academic Performance")
 
 col1, col2, col3 = st.columns(3)
 col1.metric("Average CGPA", f"{df['Current_CGPA'].mean():.2f}")
 col2.metric("Median CGPA", f"{df['Current_CGPA'].median():.2f}")
-col3.metric("Standard Deviation", f"{df['Current_CGPA'].std():.2f}")
+col3.metric("Std. Deviation", f"{df['Current_CGPA'].std():.2f}")
 
 st.divider()
 
 # --- Gender Metrics ---
-st.subheader("👩‍🎓 Average CGPA by Gender")
+st.subheader("Average CGPA by Gender")
 
 gender_cgpa = df.groupby('Gender', as_index=False)['Current_CGPA'].mean()
 col_m, col_f = st.columns(2)
@@ -84,14 +87,14 @@ col_f.info(f"**Female Average CGPA:** {female_avg:.2f}")
 st.divider()
 
 # =========================================================
-# 📊 Visualization Functions
+# 📈 Visualization Functions
 # =========================================================
 def plot_cgpa_vs_gender(data):
     fig = px.box(
         data, x='Gender', y='Current_CGPA',
         color='Gender',
         title="CGPA Distribution by Gender",
-        color_discrete_map={'Male': 'royalblue', 'Female': 'lightcoral'},
+        color_discrete_map={'Male': 'blue', 'Female': 'red'},
         height=450, range_y=[2.0, 4.0]
     )
     fig.update_layout(xaxis_title="Gender", yaxis_title="Current CGPA")
@@ -105,66 +108,4 @@ def plot_cgpa_heatmap(data):
         y=grouped.index.astype(str),
         color_continuous_scale="YlGnBu",
         text_auto=".2f",
-        title="Average CGPA by Admission Year and Age Group",
-        height=500
-    )
-    fig.update_layout(xaxis_title="Age Group", yaxis_title="Admission Year")
-    return fig
-
-def plot_cgpa_by_income_scholarship(data):
-    grouped = data.groupby(['Income_Group', 'Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
-    fig = px.bar(
-        grouped,
-        x='Income_Group',
-        y='Current_CGPA',
-        color='Meritorious_Scholarship',
-        barmode='group',
-        title="Average CGPA by Family Income and Scholarship Status",
-        labels={'Current_CGPA': 'Average CGPA', 'Meritorious_Scholarship': 'Scholarship'},
-        color_discrete_map={'Yes': 'seagreen', 'No': 'tomato'},
-        height=500
-    )
-    fig.update_layout(xaxis_title="Family Income Group", yaxis_title="Average CGPA")
-    return fig
-
-# =========================================================
-# 🧠 Visualizations
-# =========================================================
-st.subheader("📍 Visualization 1: CGPA Distribution by Gender")
-st.plotly_chart(plot_cgpa_vs_gender(df), use_container_width=True)
-
-st.subheader("📍 Visualization 2: Heatmap of Average CGPA by Admission Year and Age Group")
-st.plotly_chart(plot_cgpa_heatmap(df), use_container_width=True)
-
-st.subheader("📍 Visualization 3: CGPA by Family Income and Scholarship Status")
-st.plotly_chart(plot_cgpa_by_income_scholarship(df), use_container_width=True)
-
-# =========================================================
-# 🧩 Findings and Interpretation
-# =========================================================
-st.header("🔍 Analysis and Findings", divider="blue")
-
-with st.container(border=True):
-    st.markdown("""
-    **Summary:**  
-    This analysis explores the impact of **gender**, **age**, and **socio-economic background** 
-    on academic performance. Results show that:
-    
-    - **Gender parity** exists in academic outcomes.  
-    - **Older students (25+)** often have slightly lower CGPAs, possibly due to additional life commitments.  
-    - **Meritorious scholarships** consistently align with higher CGPAs across all income levels, 
-      indicating their strong link to student performance and potential.
-    """)
-
-st.markdown("""
-**Interpretation Highlights:**
-- 🎯 *Gender Equality:* CGPA differences between genders are minimal.  
-- 🧑‍🏫 *Age & Admission Year:* Non-traditional or older students show modestly lower averages.  
-- 💰 *Scholarship Effect:* Scholarship recipients outperform peers in every income group.
-""")
-
-# =========================================================
-# ✅ End of Page
-# =========================================================
-st.success("✅ Analysis Completed Successfully")
-
+        title="Average CGPA by Admission
