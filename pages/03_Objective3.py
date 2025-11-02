@@ -38,7 +38,7 @@ st.markdown("🤝 Explore the interplay of academic challenges and student engag
 st.header("Summary Overview", divider="green")
 with st.container(border=True):
     st.markdown("""
-    **Summary (100–150 words):**  
+    **Summary:**  
     This objective evaluates the role of **support mechanisms** (teacher consultancy), **language proficiency**, and **long-term engagement** (skill development) on academic outcomes.  
     The metrics reveal a positive **CGPA boost** (approximately +0.13) for students attending **teacher consultancy**, suggesting it is an effective intervention tool.  
     The box plot confirms that consultation significantly reduces the probability of a student falling into probation.  
