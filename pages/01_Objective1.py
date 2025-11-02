@@ -146,7 +146,7 @@ st.header("Analysis and Findings", divider="blue")
 st.subheader("Summary Box: Socio-economic and Demographic Influence")
 with st.container(border=True):
     st.markdown("""
-    **Summary (100–150 words):**
+    **Summary:**
     This analysis explores the impact of **gender**, **age/admission year**, and **socio-economic status** on **Current CGPA**. The visualizations show that while average CGPA is similar between genders (as reflected in the metrics), the **Meritorious Scholarship** status is a powerful positive differentiator across all income groups, consistently linking to higher average CGPA. The heatmap reveals a potential academic challenge among older students (25+) across most admission years, as they tend to have slightly lower average CGPAs compared to the younger groups. Overall, financial aid tied to merit appears to be a stronger predictor of academic performance than gender or income group alone.
     """)
 
