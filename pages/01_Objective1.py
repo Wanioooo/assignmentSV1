@@ -34,7 +34,7 @@ def plot_cgpa_vs_gender(data):
     fig.update_layout(xaxis_title='Gender', yaxis_title='Current CGPA')
     return fig
 
-st.subheader(Visualization 2: Heatmap of Average CGPA by Admission Year and Age Group")
+st.subheader("Visualization 2: Heatmap of Average CGPA by Admission Year and Age Group")
 
 def plot_cgpa_heatmap(data):
     heatmap_data = data.groupby(['Admission_Year','Age_Group'])['Current_CGPA'].mean().unstack()
