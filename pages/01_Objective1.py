@@ -161,16 +161,4 @@ st.markdown("""
   the highest potential for academic excellence.
 """)
 
-st.divider()
-
-# =========================================================
-# Final Findings
-# =========================================================
-st.header("Analysis and Findings")
-st.markdown("""
-* **Gender Parity:** The box plot and average metrics suggest that there is **no significant academic gap based on gender**.  
-* **Age and Admission Year:** The **Heatmap** shows that the **Age Group (25+)** is associated with lower average CGPAs, particularly for those admitted more recently (2020-2021).  
-* **Scholarship as a Predictor:** Students receiving a **Meritorious Scholarship** maintain substantially higher CGPAs than their non-scholarship counterparts, regardless of income group.
-""")
-
 st.success("✅ Analysis Completed Successfully")
