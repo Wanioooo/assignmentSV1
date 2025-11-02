@@ -2,17 +2,98 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+import numpy as np
+
+# Set page configuration for better layout
+st.set_page_config(layout="wide")
 
 # --- Load Data ---
 @st.cache_data
 def load_data():
-    df = pd.read_csv('new_dataset_academic_performance (1).csv')
-    df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=['18-20','21-22','23-24','25+'], ordered=True)
-    return df
+    try:
+        # CRITICAL FIX: Ensure the file path is correct
+        df = pd.read_csv('new_dataset_academic_performance (1).csv')
+        
+        # Ensure categories are ordered
+        df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=['18-20','21-22','23-24','25+'], ordered=True)
+        # Order English Proficiency for calculations and display consistency
+        english_order = ['Basic', 'Intermediate', 'Advance']
+        df['English_Proficiency'] = pd.Categorical(df['English_Proficiency'], categories=english_order, ordered=True)
+        
+        return df
+    except FileNotFoundError:
+        st.error("🚨 Error: Data file 'new_dataset_academic_performance (1).csv' not found. Please ensure it is in the correct path.")
+        # Return an empty DataFrame to prevent NameError
+        return pd.DataFrame({
+            'Current_CGPA': [], 'Fell_Probation': [], 'Attends_Consultancy': [], 
+            'Semester': [], 'Daily_Skill_Dev_Hours': [], 'English_Proficiency': []
+        })
+    except Exception as e:
+        st.error(f"🚨 An unexpected error occurred during data loading: {e}")
+        return pd.DataFrame({
+            'Current_CGPA': [], 'Fell_Probation': [], 'Attends_Consultancy': [], 
+            'Semester': [], 'Daily_Skill_Dev_Hours': [], 'English_Proficiency': []
+        })
 
 df = load_data()
 
 st.title("Objective 3: Support Systems and Skill Development")
+st.markdown("🤝 Analyzing the role of university support systems (consultancy, probation) and student skill development in academic success.")
+
+# Check if the DataFrame is empty before proceeding with calculations
+if df.empty or 'Current_CGPA' not in df.columns:
+    st.warning("Cannot run analysis: Data is either empty or failed to load correctly.")
+    pass
+else:
+    # --- START: Key Metric Summary Section ---
+    st.header("Key Support and Skill Metrics", divider="green")
+
+    # 1. Overall Probation and Consultancy Impact
+    col_p, col_c, col_s = st.columns(3)
+
+    # Probation Rate
+    probation_rate = (df['Fell_Probation'].astype(str).str.lower() == 'yes').mean() * 100
+    col_p.metric(
+        "Overall Probation Rate",
+        f"{probation_rate:.1f}%",
+        help="Percentage of students who have reported falling on academic probation."
+    )
+
+    # Consultancy CGPA Impact (Difference: Yes - No)
+    consultancy_cgpa = df.groupby('Attends_Consultancy')['Current_CGPA'].mean()
+    consultancy_yes = consultancy_cgpa.get('Yes', 0)
+    consultancy_no = consultancy_cgpa.get('No', 0)
+    cgpa_diff = consultancy_yes - consultancy_no
+
+    col_c.metric(
+        "Consultancy CGPA Boost",
+        f"{cgpa_diff:.2f}",
+        delta_color="normal",
+        delta="Higher CGPA" if cgpa_diff > 0 else "Lower CGPA",
+        help=f"Avg CGPA of students who attend consultancy ({consultancy_yes:.2f}) vs. those who don't ({consultancy_no:.2f})."
+    )
+
+    # Average Daily Skill Development Hours
+    avg_skill_dev = df['Daily_Skill_Dev_Hours'].mean()
+    col_s.metric(
+        "Avg. Daily Skill Dev. Hours",
+        f"{avg_skill_dev:.1f} hrs",
+        help="Average time spent daily by students on skill development."
+    )
+
+    st.subheader("English Proficiency & Probation")
+    
+    # 2. English Proficiency Probation Breakdown
+    english_prob_rates = df.groupby('English_Proficiency')['Fell_Probation'].apply(lambda x: (x.astype(str).str.lower() == 'yes').mean()) * 100
+    
+    col_basic, col_inter, col_adv = st.columns(3)
+    
+    col_basic.info(f"**Basic English Probation Rate:** {english_prob_rates.get('Basic', 0):.1f}%")
+    col_inter.info(f"**Intermediate English Probation Rate:** {english_prob_rates.get('Intermediate', 0):.1f}%")
+    col_adv.info(f"**Advanced English Probation Rate:** {english_prob_rates.get('Advance', 0):.1f}%")
+
+    st.divider()
+    # --- END: Key Metric Summary Section ---
 
 # --- Visualization Functions (from main.py) ---
 
@@ -22,7 +103,7 @@ def plot_probation_consultancy(data):
         x='Fell_Probation',
         y='Current_CGPA',
         color='Attends_Consultancy',
-        title='CGPA Distribution: Probation Status and Teacher Consultancy',
+        title='Visualization 1: CGPA Distribution: Probation Status and Teacher Consultancy',
         labels={'Fell_Probation':'Did you ever fall in probation?','Attends_Consultancy':'Attends Consultancy?'},
         height=500,
         range_y=[2.0,4.0],
@@ -37,7 +118,7 @@ def plot_skill_dev_vs_semester(data):
         skill_dev_data,
         x='Semester',
         y='Daily_Skill_Dev_Hours',
-        title='Average Daily Skill Development Hours by Current Semester',
+        title='Visualization 2: Average Daily Skill Development Hours by Current Semester',
         markers=True,
         height=500
     )
@@ -70,7 +151,7 @@ def plot_english_probation_count_heatmap(data):
                 font=dict(color="black")
             ))
     fig.update_layout(
-        title='Student Count by English Proficiency and Probation Status',
+        title='Visualization 3: Student Count by English Proficiency and Probation Status',
         xaxis_title='Did you ever fall in probation?',
         yaxis_title='English Language Proficiency',
         annotations=annotations,
@@ -80,6 +161,11 @@ def plot_english_probation_count_heatmap(data):
     return fig
 
 # --- Display Visualizations ---
-st.plotly_chart(plot_probation_consultancy(df), width='stretch')
-st.plotly_chart(plot_skill_dev_vs_semester(df), width='stretch')
-st.plotly_chart(plot_english_probation_count_heatmap(df), width='stretch')
+st.subheader("Visualization 1: CGPA Distribution: Probation Status and Teacher Consultancy")
+st.plotly_chart(plot_probation_consultancy(df), use_container_width=True)
+
+st.subheader("Visualization 2: Average Daily Skill Development Hours by Current Semester")
+st.plotly_chart(plot_skill_dev_vs_semester(df), use_container_width=True)
+
+st.subheader("Visualization 3: Student Count by English Proficiency and Probation Status")
+st.plotly_chart(plot_english_probation_count_heatmap(df), use_container_width=True)
