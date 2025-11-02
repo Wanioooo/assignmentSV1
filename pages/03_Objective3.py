@@ -1,169 +1,186 @@
 import streamlit as st
 import pandas as pd
 import plotly.express as px
+import plotly.graph_objects as go
 import numpy as np
 
-# --- Streamlit Page Setup ---
+# Set page configuration for better layout
 st.set_page_config(layout="wide")
 
-# --- Load Data Function ---
+# --- Load Data ---
 @st.cache_data
 def load_data():
     try:
-        URL = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
-        df = pd.read_csv(URL)
-
-        # Ensure consistent category ordering
-        df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=['18-20', '21-22', '23-24', '25+'], ordered=True)
+        df = pd.read_csv('new_dataset_academic_performance (1).csv')
         
-        # Sort categories for better visual order
-        study_order = sorted(df['Daily_Study_Hours'].unique())
-        media_order = sorted(df['Daily_Social_Media_Hours'].unique())
-
-        df['Daily_Study_Hours'] = pd.Categorical(df['Daily_Study_Hours'], categories=study_order, ordered=True)
-        df['Daily_Social_Media_Hours'] = pd.Categorical(df['Daily_Social_Media_Hours'], categories=media_order, ordered=True)
-
+        # Ensure categories are ordered
+        df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=['18-20','21-22','23-24','25+'], ordered=True)
+        english_order = ['Basic', 'Intermediate', 'Advance']
+        df['English_Proficiency'] = pd.Categorical(df['English_Proficiency'], categories=english_order, ordered=True)
+        
         return df
+    except FileNotFoundError:
+        st.error("🚨 Error: Data file 'new_dataset_academic_performance (1).csv' not found. Please ensure it is in the correct path.")
+        return pd.DataFrame({
+            'Current_CGPA': [], 'Fell_Probation': [], 'Attends_Consultancy': [], 
+            'Semester': [], 'Daily_Skill_Dev_Hours': [], 'English_Proficiency': []
+        })
     except Exception as e:
         st.error(f"🚨 An unexpected error occurred during data loading: {e}")
         return pd.DataFrame({
-            'Current_CGPA': [], 'Daily_Study_Hours': [], 'Daily_Social_Media_Hours': [],
-            'Attendance_Pct': [], 'Learning_Mode': [], 'Has_PC': []
+            'Current_CGPA': [], 'Fell_Probation': [], 'Attends_Consultancy': [], 
+            'Semester': [], 'Daily_Skill_Dev_Hours': [], 'English_Proficiency': []
         })
 
-# --- Load Data ---
 df = load_data()
 
-st.title("Objective 2: Study Habits and Resource Utilization")
-st.markdown("🔍 Investigate the relationship between study habits and resource utilization with student academic performance.")
+st.title("Objective 3: Academic Challenges and Student Engagement")
+st.markdown("🤝 Explore the interplay of academic challenges and student engagement with overall performance.")
 
-# --- Summary Metrics Section ---
+# Check if data is valid
 if df.empty or 'Current_CGPA' not in df.columns:
     st.warning("Cannot run analysis: Data is either empty or failed to load correctly.")
-    st.stop()
+    pass
+else:
+    # --- START: Key Metric Summary Section ---
+    st.header("Key Support and Skill Metrics", divider="green")
 
-st.header("Key Summary Metrics", divider="blue")
+    col_p, col_c, col_s = st.columns(3)
 
-col1, col2, col3 = st.columns(3)
-col1.metric("Overall Average CGPA", f"{df['Current_CGPA'].mean():.2f}")
-col2.metric("Average Attendance %", f"{df['Attendance_Pct'].mean():.1f}%")
-
-correlation = df['Attendance_Pct'].corr(df['Current_CGPA'])
-col3.metric(
-    "Attendance vs. CGPA Correlation",
-    f"{correlation:.2f}",
-    help="Pearson correlation coefficient between Class Attendance Percentage and Current CGPA."
-)
-
-st.subheader("CGPA by Study vs. Social Media Balance")
-
-# --- Study/Social Media Insights ---
-study_cgpa = df.groupby('Daily_Study_Hours')['Current_CGPA'].mean().sort_values(ascending=False)
-social_cgpa = df.groupby('Daily_Social_Media_Hours')['Current_CGPA'].mean().sort_values(ascending=True)
-
-col_study, col_social, col_pc = st.columns(3)
-
-col_study.metric(
-    label=f"Highest Avg. CGPA ({study_cgpa.index[0]} Study Hours)",
-    value=f"{study_cgpa.iloc[0]:.2f}"
-)
-
-col_social.metric(
-    label=f"Lowest Avg. CGPA ({social_cgpa.index[0]} Social Media Hours)",
-    value=f"{social_cgpa.iloc[0]:.2f}"
-)
-
-pc_data = df.groupby('Has_PC')['Current_CGPA'].mean()
-if 'Yes' in pc_data.index and 'No' in pc_data.index:
-    pc_diff = pc_data['Yes'] - pc_data['No']
-    col_pc.metric(
-        label="CGPA Difference (PC Ownership)",
-        value=f"{pc_diff:.2f}",
-        delta="Higher" if pc_diff > 0 else "Lower",
-        help="Average CGPA difference between students with and without personal computers."
+    probation_rate = (df['Fell_Probation'].astype(str).str.lower() == 'yes').mean() * 100
+    col_p.metric(
+        "Overall Probation Rate",
+        f"{probation_rate:.1f}%",
+        help="Percentage of students who have reported falling on academic probation."
     )
 
-st.divider()
+    consultancy_cgpa = df.groupby('Attends_Consultancy')['Current_CGPA'].mean()
+    consultancy_yes = consultancy_cgpa.get('Yes', 0)
+    consultancy_no = consultancy_cgpa.get('No', 0)
+    cgpa_diff = consultancy_yes - consultancy_no
 
-# --- Summary Box (Before Visualizations) ---
-st.header("📦 Summary Box: Study Habits and Resource Utilization", divider="gray")
+    col_c.metric(
+        "Consultancy CGPA Boost",
+        f"{cgpa_diff:.2f}",
+        delta_color="normal",
+        delta="Higher CGPA" if cgpa_diff > 0 else "Lower CGPA",
+        help=f"Avg CGPA of students who attend consultancy ({consultancy_yes:.2f}) vs. those who don't ({consultancy_no:.2f})."
+    )
+
+    avg_skill_dev = df['Daily_Skill_Dev_Hours'].mean()
+    col_s.metric(
+        "Avg. Daily Skill Dev. Hours",
+        f"{avg_skill_dev:.1f} hrs",
+        help="Average time spent daily by students on skill development."
+    )
+
+    st.subheader("English Proficiency & Probation Rates")
+
+    english_prob_rates = df.groupby('English_Proficiency')['Fell_Probation'].apply(
+        lambda x: (x.astype(str).str.lower() == 'yes').mean()) * 100
+
+    col_basic, col_inter, col_adv = st.columns(3)
+    col_basic.info(f"*Basic English Probation Rate:* {english_prob_rates.get('Basic', 0):.1f}%")
+    col_inter.info(f"*Intermediate English Probation Rate:* {english_prob_rates.get('Intermediate', 0):.1f}%")
+    col_adv.info(f"*Advanced English Probation Rate:* {english_prob_rates.get('Advance', 0):.1f}%")
+
+    st.divider()
+
+# --- Visualization Functions ---
+def plot_probation_consultancy(data):
+    fig = px.box(
+        data,
+        x='Fell_Probation',
+        y='Current_CGPA',
+        color='Attends_Consultancy',
+        title='Visualization 1: CGPA Distribution: Probation Status and Teacher Consultancy',
+        labels={'Fell_Probation':'Did you ever fall in probation?','Attends_Consultancy':'Attends Consultancy?'},
+        height=500,
+        range_y=[2.0,4.0],
+        color_discrete_map={'Yes':'lightsalmon','No':'skyblue'}
+    )
+    fig.update_layout(xaxis_title='Did you ever fall in probation?', yaxis_title='Current CGPA')
+    return fig
+
+def plot_skill_dev_vs_semester(data):
+    skill_dev_data = data.groupby('Semester')['Daily_Skill_Dev_Hours'].mean().reset_index()
+    fig = px.line(
+        skill_dev_data,
+        x='Semester',
+        y='Daily_Skill_Dev_Hours',
+        title='Visualization 2: Average Daily Skill Development Hours by Current Semester',
+        markers=True,
+        height=500
+    )
+    fig.update_layout(
+        xaxis_title='Current Semester',
+        yaxis_title='Average Daily Skill Development Hours',
+        xaxis={'tickvals':skill_dev_data['Semester'].unique()}
+    )
+    return fig
+
+def plot_english_probation_count_heatmap(data):
+    count_data = data.groupby(['English_Proficiency','Fell_Probation']).size().unstack(fill_value=0)
+    english_order = ['Basic','Intermediate','Advance']
+    count_data = count_data.reindex(index=english_order)
+    fig = go.Figure(data=go.Heatmap(
+        z=count_data.values,
+        x=count_data.columns,
+        y=count_data.index,
+        colorscale='Reds',
+        hoverongaps=False
+    ))
+    annotations = []
+    for i,row in enumerate(count_data.index):
+        for j,col in enumerate(count_data.columns):
+            annotations.append(dict(
+                x=col,
+                y=row,
+                text=str(count_data.iloc[i,j]),
+                showarrow=False,
+                font=dict(color="black")
+            ))
+    fig.update_layout(
+        title='Visualization 3: Student Count by English Proficiency and Probation Status',
+        xaxis_title='Did you ever fall in probation?',
+        yaxis_title='English Language Proficiency',
+        annotations=annotations,
+        height=500
+    )
+    fig.update_coloraxes(colorbar_title='Count of Students')
+    return fig
+
+# --- Summary Box before visualization ---
+st.header("Summary Box: Academic Challenges and Student Engagement", divider="red")
 with st.container(border=True):
     st.markdown("""
-    **Summary:**
-    This objective analyzes how *study habits* (study time, social media time, attendance) and *resources* (PC ownership) impact *Current CGPA*.  
-    There is a clear **positive relationship** between *Daily Study Hours* and *Average CGPA*, peaking in the 3–4 hour range.  
-    Conversely, increased *Daily Social Media Hours* correlate with lower median CGPA and higher variability.  
-    The scatter plot confirms a **strong positive correlation** (~0.70) between *Class Attendance Percentage* and *CGPA*, showing its importance for academic success.  
-    Furthermore, owning a *Personal Computer (PC)* is associated with consistently higher average CGPA across all learning modes, highlighting the academic advantage of access to digital resources.
+    *Summary:*
+    This objective explores how academic challenges (probation, language proficiency) and engagement (consultancy attendance, skill development) interact to affect student performance.
+    Students who attend **teacher consultancy sessions** tend to have **higher CGPA**, suggesting that support-seeking behavior contributes to improved outcomes.
+    Meanwhile, **English proficiency** correlates strongly with lower probation rates, emphasizing communication skills as a key success factor.
+    Additionally, **skill development efforts** increase as students progress through semesters, showing growing awareness of employability and academic maturity.
     """)
 
-# --- Visualization 1 ---
-st.subheader("Visualization 1: CGPA Distribution by Daily Social Media Hours")
-fig1 = px.box(
-    df,
-    x='Daily_Social_Media_Hours',
-    y='Current_CGPA',
-    color='Daily_Social_Media_Hours',
-    title='Visualization 1: CGPA Distribution by Daily Social Media Hours',
-    height=550,
-    range_y=[2.0, 4.0]
-)
-fig1.update_layout(
-    xaxis_title='Daily Social Media Hours (Hours)',
-    yaxis_title='Current CGPA',
-    showlegend=False
-)
-st.plotly_chart(fig1, use_container_width=True)
+# --- Display Visualizations with Interpretation ---
+st.subheader("Visualization 1: CGPA Distribution: Probation Status and Teacher Consultancy")
+st.plotly_chart(plot_probation_consultancy(df), use_container_width=True)
 st.markdown("""
 **Interpretation:**  
-Higher daily social media usage corresponds to a lower median CGPA and increased performance variability.  
-This pattern suggests that excessive social media engagement is linked with *reduced academic focus and consistency*.
+Students who have never fallen on probation consistently show higher CGPA, and this performance gap widens among those who attend teacher consultancy.
+This suggests that proactive engagement with faculty provides academic stability, particularly for at-risk students who might otherwise face performance decline.
 """)
 
-# --- Visualization 2 ---
-st.subheader("Visualization 2: Scatter Plot of Current CGPA vs. Class Attendance Percentage")
-fig2 = px.scatter(
-    df,
-    x='Attendance_Pct',
-    y='Current_CGPA',
-    trendline='ols',
-    title='Visualization 2: Scatter Plot of Current CGPA vs. Class Attendance Percentage',
-    height=500,
-    range_x=[0, 100],
-    range_y=[2.0, 4.0]
-)
-fig2.update_layout(
-    xaxis_title='Class Attendance Percentage',
-    yaxis_title='Current CGPA'
-)
-st.plotly_chart(fig2, use_container_width=True)
+st.subheader("Visualization 2: Average Daily Skill Development Hours by Current Semester")
+st.plotly_chart(plot_skill_dev_vs_semester(df), use_container_width=True)
 st.markdown("""
 **Interpretation:**  
-The scatter plot exhibits a strong **positive correlation** between *Class Attendance* and *CGPA*.  
-Students with consistent attendance generally maintain higher academic performance, confirming that *class participation and presence* are essential to success.
+A gradual increase in average skill development hours across semesters indicates that students invest more time in personal and technical growth as they advance in their academic journey.
+This trend may reflect awareness of future career readiness and practical skill acquisition in higher semesters.
 """)
 
-# --- Visualization 3 ---
-st.subheader("Visualization 4: Average CGPA: PC Ownership vs. Learning Mode")
-pc_mode_data = df.groupby(['Learning_Mode', 'Has_PC'])['Current_CGPA'].mean().reset_index()
-fig4 = px.bar(
-    pc_mode_data,
-    x='Learning_Mode',
-    y='Current_CGPA',
-    color='Has_PC',
-    barmode='group',
-    title='Visualization 4: Average CGPA: PC Ownership vs. Learning Mode',
-    labels={'Current_CGPA': 'Average Current CGPA', 'Has_PC': 'Has Personal Computer?'},
-    height=500,
-    color_discrete_map={'Yes': '#E41A1C', 'No': '#377EB8'}
-)
-fig4.update_layout(
-    xaxis_title='Preferred Learning Mode',
-    yaxis_title='Average Current CGPA'
-)
-st.plotly_chart(fig4, use_container_width=True)
+st.subheader("Visualization 3: Student Count by English Proficiency and Probation Status")
+st.plotly_chart(plot_english_probation_count_heatmap(df), use_container_width=True)
 st.markdown("""
 **Interpretation:**  
-Students who own a **Personal Computer (PC)** consistently show higher CGPA across all learning modes (online, physical, blended).  
-This finding emphasizes how *access to technology* significantly supports academic performance and efficiency.
-""")
+Students with *Basic English proficiency* show a notably higher probation count compared to *Intermediate* and *Advanced* groups.
+This pattern demonstrates that language ability plays a crucial role in academic retention and performance, reinforcing the need
