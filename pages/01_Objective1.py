@@ -14,8 +14,9 @@ def load_data():
 df = load_data()
 
 st.set_page_config(
-    page_title=""Objective 1: Socio-economic and Demographic Influence""
+    page_title="Objective 1: Socio-economic and Demographic Influence"
 )
+
 st.title("Objective 1: Socio-economic and Demographic Influence")
 
 # --- Visualization Functions from main.py ---
