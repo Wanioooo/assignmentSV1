@@ -10,13 +10,12 @@ st.set_page_config(layout="wide")
 @st.cache_data
 def load_data():
     try:
-        # CRITICAL FIX: Ensure the file path is correct
-        df = pd.read_csv('new_dataset_academic_performance (1).csv')
+        # NOTE: Using the robust URL for data loading.
+        URL = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
+        df = pd.read_csv(URL)
         
         # Ensure categories are ordered
         df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=['18-20','21-22','23-24','25+'], ordered=True)
-        # Assuming Daily_Study_Hours and Daily_Social_Media_Hours are strings/categories like '1-2', '3-4', etc.
-        # Order them manually if the categories are known strings, otherwise keep as is or convert to numeric range center.
         
         # Re-ordering for better visualization structure if they are strings like '1-2', '3-4'
         study_order = sorted(df['Daily_Study_Hours'].unique())
@@ -26,10 +25,6 @@ def load_data():
         df['Daily_Social_Media_Hours'] = pd.Categorical(df['Daily_Social_Media_Hours'], categories=media_order, ordered=True)
         
         return df
-    except FileNotFoundError:
-        st.error("🚨 Error: Data file 'new_dataset_academic_performance (1).csv' not found. Please ensure it is in the correct path.")
-        # Return an empty DataFrame to prevent NameError
-        return pd.DataFrame({'Current_CGPA': [], 'Daily_Study_Hours': [], 'Daily_Social_Media_Hours': [], 'Attendance_Pct': [], 'Learning_Mode': [], 'Has_PC': []})
     except Exception as e:
         st.error(f"🚨 An unexpected error occurred during data loading: {e}")
         return pd.DataFrame({'Current_CGPA': [], 'Daily_Study_Hours': [], 'Daily_Social_Media_Hours': [], 'Attendance_Pct': [], 'Learning_Mode': [], 'Has_PC': []})
@@ -42,8 +37,6 @@ st.markdown("🔍 Investigate the relationship between study habits and resource
 # Check if the DataFrame is empty before proceeding with calculations
 if df.empty or 'Current_CGPA' not in df.columns:
     st.warning("Cannot run analysis: Data is either empty or failed to load correctly.")
-    # Sticking with the original design by allowing the rest of the code to fail gracefully if st.stop() is not used.
-    # We rely on the empty DataFrame returning from load_data to handle the downstream function calls.
     pass
 else:
     # --- START: Key Metric Summary Section ---
@@ -77,7 +70,7 @@ else:
     col_study, col_social, col_pc = st.columns(3)
 
     with col_study:
-        st.markdown(f"**Highest CGPA Achieved:**")
+        st.markdown(f"**Highest CGPA Correlates with:**")
         st.metric(
             label=f"Avg. CGPA for {study_highest_category} Study Hours", 
             value=f"{study_highest_cgpa:.2f}"
@@ -207,3 +200,23 @@ st.plotly_chart(plot_cgpa_vs_study_hours(df), use_container_width=True)
 
 st.subheader("Visualization 4: Average CGPA: PC Ownership vs. Learning Mode")
 st.plotly_chart(plot_pc_vs_learning_mode(df), use_container_width=True)
+
+
+# --- START: Summary Box and Interpretation ---
+st.header("Analysis and Findings", divider="red")
+
+st.subheader("Summary Box: Study Habits and Resource Utilization")
+with st.container(border=True):
+    st.markdown("""
+    **Summary (100–150 words):**
+    This objective analyzes how **study habits** (study time, social media time, attendance) and **resources** (PC ownership) impact **Current CGPA**. There is a clear **positive relationship** between **Daily Study Hours** and average CGPA, peaking in the 3-4 hour range. Conversely, increased **Daily Social Media Hours** correlate with lower median CGPA and wider performance variation. The scatter plot confirms a **strong positive correlation** (approx. 0.70) between **Class Attendance Percentage** and CGPA, highlighting its critical role. Furthermore, owning a **Personal Computer (PC)** is associated with a reliably higher average CGPA, irrespective of the student's preferred learning mode (online, physical, or blended), suggesting that accessibility to personal equipment is a significant resource advantage.
+    """)
+
+st.subheader("Interpretation/Discussion: Observed Patterns")
+st.markdown("""
+* **Study Time vs. CGPA:** The visualization shows a **monotonic increase** in average CGPA as study hours increase, confirming the principle of effort yielding results. The leveling off or slight dip at the highest end of study hours might suggest a balance is necessary to avoid burnout.
+* **Attendance:** The **strongest predictive factor** observed is the high positive correlation coefficient between **Attendance Percentage and CGPA**. This pattern indicates that active participation and presence in class are non-negotiable foundations for achieving academic success.
+* **Social Media Interference:** The wider, lower box plots for higher social media usage categories suggest that excessive time spent on these platforms acts as a significant **academic distraction**, increasing performance variance and lowering the median expected CGPA.
+* **Resource Advantage (PC):** The grouped bar chart demonstrates that **PC ownership** provides a uniform academic benefit (higher average CGPA) across all learning modes. This reflects the modern dependency on personal computing resources for research, assignment completion, and effective engagement, even in physical and blended learning environments.
+""")
+# --- END: Summary Box and Interpretation ---
