@@ -190,7 +190,7 @@ st.header("Visualizations and Interpretations", divider="orange")
 
 st.subheader("Visualization 1: Grouped Box Plot of CGPA: Probation Status and Teacher Consultancy")
 st.plotly_chart(plot_probation_consultancy(df), use_container_width=True)
-
+    
 st.subheader("Visualization 2: Line Plot of Average Daily Skill Development Hours by Current Semester")
 st.plotly_chart(plot_skill_dev_vs_semester(df), use_container_width=True)
 
