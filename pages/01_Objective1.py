@@ -17,7 +17,7 @@ st.set_page_config(
     page_title="Objective 1: Socio-economic and Demographic Influence"
 )
 
-st.title("Objective 1: Socio-economic and Demographic Influence")
+st.header("Analyze the influence of socio-economic and demographic factors on student academic performance (Current CGPA). This objective seeks to identify how innate characteristics and external financial conditions correlate with a student's final academic standing.", divider="gray")
 
 # --- Visualization Functions from main.py ---
 
