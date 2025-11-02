@@ -34,6 +34,8 @@ def plot_cgpa_vs_gender(data):
     fig.update_layout(xaxis_title='Gender', yaxis_title='Current CGPA')
     return fig
 
+st.subheader(Visualization 2: Heatmap of Average CGPA by Admission Year and Age Group")
+
 def plot_cgpa_heatmap(data):
     heatmap_data = data.groupby(['Admission_Year','Age_Group'])['Current_CGPA'].mean().unstack()
     age_order = ['18-20','21-22','23-24','25+']
@@ -50,6 +52,8 @@ def plot_cgpa_heatmap(data):
     fig.update_layout(xaxis_title='Age Group (Years)', yaxis_title='University Admission Year', height=500)
     fig.update_coloraxes(colorbar_title='Average Current CGPA')
     return fig
+    
+st.subheader("Visualization 3: Group Bar Plot Average CGPA by Family Income Group and Meritorious Scholarship Status.")
 
 def plot_cgpa_by_income_scholarship(data):
     grouped_data = data.groupby(['Income_Group','Meritorious_Scholarship'])['Current_CGPA'].mean().reset_index()
