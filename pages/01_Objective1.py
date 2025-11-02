@@ -1,8 +1,37 @@
 import streamlit as st
+import pandas as pd
 import plotly.express as px
-from data_loader import setup_page # Import the common setup function
+import plotly.graph_objects as go
+from plotly.subplots import make_subplots
 
-# --- Visualization Functions (Objective 1) ---
+# Set Streamlit page configuration
+st.set_page_config(
+    page_title="Objective 1: Core Performance Metrics",
+    layout="wide",
+    initial_sidebar_state="expanded"
+)
+
+## Data Loading and Preparation
+URL = "https://raw.githubusercontent.com/Wanioooo/assignmentSV1/refs/heads/main/new_dataset_academic_performance%20(1).csv"
+
+@st.cache_data
+def load_data():
+    """Loads and preprocesses the dataset."""
+    try:
+        df = pd.read_csv(URL)
+        # Ensure Age_Group is properly ordered for charts
+        age_order = ['18-20', '21-22', '23-24', '25+']
+        df['Age_Group'] = pd.Categorical(df['Age_Group'], categories=age_order, ordered=True)
+        return df
+    except Exception as e:
+        st.error(f"An error occurred while loading the data: {e}")
+        return pd.DataFrame()
+
+df = load_data()
+if df.empty:
+    st.stop()
+
+# --- Visualization Functions using Plotly ---
 
 # 1. Box Plot: Current CGPA vs. Gender
 def plot_cgpa_vs_gender(data):
@@ -27,10 +56,8 @@ def plot_cgpa_by_income_scholarship(data):
     fig.update_layout(xaxis_title='Family Income Group', yaxis_title='Average Current CGPA')
     return fig
 
-# --- Main Streamlit App for Objective 1 ---
 
-df = setup_page("Objective 1: Core Performance")
-
+# --- Streamlit Dashboard Layout ---
 st.title("🎯 Objective 1: Core Performance Metrics & Demographics")
 st.markdown("Analyzing CGPA distribution by key demographic factors.")
 
@@ -46,7 +73,6 @@ with col1:
     st.plotly_chart(plot_cgpa_vs_gender(df), use_container_width=True)
 with col2:
     st.plotly_chart(plot_cgpa_heatmap(df), use_container_width=True)
-
 st.plotly_chart(plot_cgpa_by_income_scholarship(df), use_container_width=True)
 
 st.subheader("Interpretation/Discussion: Core Performance")
@@ -56,4 +82,5 @@ st.markdown("""
 * **Income & Scholarship:** The grouped bar plot confirms a powerful interaction effect: while higher income groups generally have higher CGPAs, the **Meritorious Scholarship** acts as a powerful equalizer and predictor of high performance, significantly boosting the average CGPA across **all income brackets**.
 """)
 
-st.caption("Dashboard section powered by Streamlit and Plotly.")
+st.sidebar.header("Data Overview")
+st.sidebar.markdown(f"Data Loaded Successfully: **{len(df)} records**")
