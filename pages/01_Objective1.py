@@ -18,6 +18,8 @@ st.markdown("🎓 Analyze the influence of socio-economic and demographic factor
 
 # --- Visualization Functions from main.py ---
 
+st.title("Visualization 1: Box Plot of CGPA Distribution by Gender")
+
 def plot_cgpa_vs_gender(data):
     fig = px.box(
         data,
