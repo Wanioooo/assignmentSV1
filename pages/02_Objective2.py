@@ -123,25 +123,6 @@ def plot_cgpa_vs_attendance(data):
     fig.update_layout(xaxis_title='Class Attendance (%)', yaxis_title='Current CGPA')
     return fig
 
-def plot_cgpa_vs_study_hours(data):
-    study_data = data.groupby('Daily_Study_Hours')['Current_CGPA'].mean().reset_index()
-    fig = px.bar(
-        study_data,
-        x='Daily_Study_Hours',
-        y='Current_CGPA',
-        color='Daily_Study_Hours',
-        title='Visualization 3: Average CGPA by Daily Study Hours',
-        height=500
-    )
-    order_array = list(data['Daily_Study_Hours'].cat.categories)
-    fig.update_layout(
-        xaxis={'categoryorder':'array','categoryarray':order_array},
-        xaxis_title='Daily Study Hours (Hours)',
-        yaxis_title='Average CGPA',
-        showlegend=False
-    )
-    return fig
-
 def plot_pc_vs_learning_mode(data):
     pc_mode_data = data.groupby(['Learning_Mode','Has_PC'])['Current_CGPA'].mean().reset_index()
     fig = px.bar(
@@ -178,29 +159,10 @@ st.markdown("""
 A strong positive correlation (~0.70) exists between attendance percentage and CGPA, confirming that consistent class participation boosts performance.
 """)
 
-# --- Visualization 3 ---
-st.subheader("Visualization 3: Average CGPA by Daily Study Hours")
-st.plotly_chart(plot_cgpa_vs_study_hours(df), use_container_width=True)
-st.markdown("""
-💡 **Interpretation:**  
-Average CGPA increases with more study hours, peaking around 3–4 hours daily, before slightly tapering — suggesting a healthy study balance is key.
-""")
-
 # --- Visualization 4 ---
-st.subheader("Visualization 4: Average CGPA — PC Ownership vs. Learning Mode")
+st.subheader("Visualization 3: Average CGPA — PC Ownership vs. Learning Mode")
 st.plotly_chart(plot_pc_vs_learning_mode(df), use_container_width=True)
 st.markdown("""
 💡 **Interpretation:**  
 Students with a personal computer achieve higher average CGPAs across all learning modes, highlighting the role of digital resource accessibility in academic success.
-""")
-
-# ==============================
-# 🔹 FINAL SUMMARY
-# ==============================
-st.header("Interpretation Summary", divider="red")
-st.markdown("""
-* **Study Time vs. CGPA:** Positive upward trend — effort aligns with performance.  
-* **Attendance:** Strongest single predictor of CGPA.  
-* **Social Media:** Higher usage increases performance variance, generally lowering CGPA.  
-* **PC Ownership:** Consistent academic benefit across all learning modes.  
 """)
